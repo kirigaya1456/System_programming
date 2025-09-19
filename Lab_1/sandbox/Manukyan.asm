@@ -14,7 +14,7 @@ _start:
     mov rax, 4
     mov rbx, 1
     mov rcx, msg
-    mov rdx, 26
+    mov rdx, msg_len
     int 0x80
     ;инициализация регистров для успешного завершения работы программы
     mov rax, 1
