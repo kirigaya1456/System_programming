@@ -3,6 +3,8 @@ cd Work
 mkdir "Лабораторная работа 1"
 mkdir "Контрольная работа 1"
 mkdir "Манукян Агаси Рубенович"
+chmod u=rwx,g=rwx,o=w "Лабораторная работа 1!"
+chmod u+rwx "Манукян Агаси Рубенович"
 touch 'Text @1'
 touch 'Text $2'
 touch 'Text #3'
