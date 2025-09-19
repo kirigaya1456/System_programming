@@ -1,0 +1,33 @@
+mkdir Work
+cd Work
+mkdir "Лабораторная работа 1"
+mkdir "Контрольная работа 1"
+mkdir "Манукян Агаси Рубенович"
+touch 'Text @1'
+touch 'Text $2'
+touch 'Text #3'
+echo -e "Птица говорун отличается умом и сообразительностью!\n\nОтличается умом, отличается сообразительностью..." > 'Text @1'
+cat 'Text @1' > 'Text #2'
+mv 'Text #2' 'Лабораторная работа 1'
+cp 'Text @1' 'Манукян Агаси Рубенович'
+gzip 'Text @1'
+gzip 'Text #3'
+tar -cf "MyArchive.tar" 'Text @1.gz' 'Text #3.gz'
+gzip -d 'Text #3'
+gzip -d 'Text @1'
+head -n 1 "Text @1" > "Text #3"
+echo "Будь Осторожен! Преступник Вооружен!" >> "Text #3"
+cd 'Манукян Агаси Рубенович'
+touch Result_one
+rev "Text @1" > "Result_one"
+mv Result_one Result_two
+cd ..
+cd 'Лабораторная работа 1'
+touch Result_3
+cat ../"Манукян Агаси Рубенович"/T* > "Result_3"
+date >> "Result_3"
+uname -a >> "Result_3"
+mkdir Lab_1
+mv Work Lab_1
+mv sandbox Lab_1
+mc Work_files Lab_1
