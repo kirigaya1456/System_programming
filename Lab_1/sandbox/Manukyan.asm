@@ -1,13 +1,20 @@
 format ELF64
 public _start
-msg db 'Manukyan A.R.', 0xA, 0
+
+msg:
+    db "Manukyan", 10
+    db "Agasi", 10
+    db "Rubenovich", 10
+msgEnd:
+
+    msg_len = msgEnd - msg
 
 _start:
     ;инициализация регистров для вывода информации на экран
     mov rax, 4
     mov rbx, 1
     mov rcx, msg
-    mov rdx, 14
+    mov rdx, 26
     int 0x80
     ;инициализация регистров для успешного завершения работы программы
     mov rax, 1
