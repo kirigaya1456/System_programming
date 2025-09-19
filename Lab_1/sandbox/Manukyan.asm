@@ -1,6 +1,6 @@
 format ELF64
 public _start
-msg db "Hello, world", 0xA, 0
+msg db 'Manukyan A.R.', 0xA, 0
 
 _start:
     ;инициализация регистров для вывода информации на экран
