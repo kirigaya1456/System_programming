@@ -1,0 +1,2 @@
++ number of letters: 4
++ number of digits: 3
