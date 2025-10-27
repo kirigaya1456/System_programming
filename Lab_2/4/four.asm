@@ -11,15 +11,15 @@ section '.text' executable
 public _start
 
 _start:
-    ; Вычисляем сумму цифр
+    
     xor eax, eax       
-    mov esi, N          ]
-    mov ecx, 10         ]
+    mov esi, N          
+    mov ecx, 10         
 
 digit_sum:
     movzx ebx, byte [esi]
-    sub ebx, '0'        ]
-    add eax, ebx       ]
+    sub ebx, '0'        
+    add eax, ebx       
     inc esi
     loop digit_sum
 
@@ -36,17 +36,14 @@ int_to_str:
     test eax, eax
     jnz int_to_str
 
-    ; Вычисляем длину
     mov esi, edi
     mov edx, output + 19
     sub edx, edi
 
-    ; Выводим результат
     mov eax, 1
     mov edi, 1
     syscall
 
-    ; Новая строка
     mov eax, 1
     mov edi, 1
     mov esi, newline
