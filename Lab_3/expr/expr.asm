@@ -1,6 +1,8 @@
 format ELF64
 public _start
 
+           ;((((a - c) + b) * c) * c) + c;
+
 section '.data' writeable
 usage_msg db "Usage: expr <a> <b> <c>",10
 usage_len = $ - usage_msg
@@ -60,6 +62,7 @@ _start:
 
     cmp r10, 0
     je show_usage
+ 
 
     mov rax, r8
     sub rax, r10

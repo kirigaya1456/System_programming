@@ -2,7 +2,7 @@ format ELF64
 
 section '.data' writeable
     symbol db '8'
-    N = 21
+    N = 30
     newline db 10
 
 section '.text' executable

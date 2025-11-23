@@ -1,11 +1,9 @@
-
-
 format ELF64
 public _start
 
 section '.text' executable
 _start:
-    ; --- читаем stdin ---
+    
     mov     rax, 0
     mov     rdi, 0
     lea     rsi, [buf]

@@ -12,45 +12,45 @@ public _start
 
 _start:
     
-    xor eax, eax       
-    mov esi, N          
-    mov ecx, 10         
+    xor rax, rax
+    mov rsi, N
+    mov rcx, 10
 
 digit_sum:
-    movzx ebx, byte [esi]
-    sub ebx, '0'        
-    add eax, ebx       
-    inc esi
+    movzx rbx, byte [rsi]
+    sub rbx, '0'
+    add rax, rbx
+    inc rsi
     loop digit_sum
 
-    mov edi, output + 19
-    mov byte [edi], 0
-    mov ebx, 10
+    mov rdi, output + 19
+    mov byte [rdi], 0
+    mov rbx, 10
 
 int_to_str:
-    dec edi
-    xor edx, edx
-    div ebx             
-    add dl, '0'         
-    mov [edi], dl
-    test eax, eax
+    dec rdi
+    xor rdx, rdx
+    div rbx
+    add dl, '0'
+    mov [rdi], dl
+    test rax, rax
     jnz int_to_str
 
-    mov esi, edi
-    mov edx, output + 19
-    sub edx, edi
+    mov rsi, rdi
+    mov rdx, output + 19
+    sub rdx, rdi
 
-    mov eax, 1
-    mov edi, 1
+    mov rax, 1
+    mov rdi, 1
     syscall
 
-    mov eax, 1
-    mov edi, 1
-    mov esi, newline
-    mov edx, 1
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, newline
+    mov rdx, 1
     syscall
 
 exit:
-    mov eax, 60
-    xor edi, edi
+    mov rax, 60
+    xor rdi, rdi
     syscall

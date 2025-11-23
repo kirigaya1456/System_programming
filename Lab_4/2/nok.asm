@@ -1,6 +1,9 @@
 format ELF64
 public _start
 
+
+;1+2−3−4+5+6−7−8…±n
+
 section '.data' writeable
     usage_msg db "Использование: ./program n", 10
     usage_len = $ - usage_msg
