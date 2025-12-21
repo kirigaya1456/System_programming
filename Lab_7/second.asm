@@ -32,7 +32,6 @@ _start:
     mov rdx, ARRLEN
     syscall
 
-    ; Фильтрация данных
     .filter_loop:
         call filter
         cmp rax, 0
@@ -53,7 +52,6 @@ _start:
 
     call new_line
 
-    ; Первый форк для среднего арифметического
     mov rax, 57
     syscall
 
@@ -66,7 +64,6 @@ _start:
     mov r10, 0
     syscall
 
-    ; Второй форк для наиболее часто встречающейся цифры
     mov rax, 57
     syscall
 
@@ -79,7 +76,6 @@ _start:
     mov r10, 0
     syscall
 
-    ; Третий форк для пятого числа после минимального
     mov rax, 57
     syscall
 
@@ -92,7 +88,6 @@ _start:
     mov r10, 0
     syscall
 
-    ; Четвёртый форк для птого после минимального
     mov rax, 57
     syscall
 
@@ -104,8 +99,6 @@ _start:
     mov rdx, 0
     mov r10, 0
     syscall
-
-
 
     call exit
 
@@ -137,8 +130,8 @@ _start:
     mov rsi, msg4
     call print_str
 
-    xor rax, rax  ; sum
-    xor rbx, rbx  ; counter
+    xor rax, rax
+    xor rbx, rbx
     .loop2:
         push rax
         mov al, [array + rbx]
@@ -163,38 +156,34 @@ _start:
     mov rsi, msg3
     call print_str
 
-    ; Инициализация массива частот
     mov rdi, digits
     mov rcx, 10
     xor rax, rax
     rep stosq
 
-    ; Обход массива
     mov rsi, array
     mov rcx, ARRLEN
     .loop1:
-        movzx rax, byte [rsi]  ; Берем число из массива
+        movzx rax, byte [rsi]
 
         .decomp_loop:
             xor rdx, rdx
             mov rbx, 10
-            div rbx                ; RDX = цифра, RAX = остаток числа
+            div rbx
 
-            ; Увеличиваем счетчик для цифры RDX
             mov r8, [digits + rdx*8]
             inc r8
             mov [digits + rdx*8], r8
 
-            test rax, rax          ; Проверяем, осталось ли что-то
+            test rax, rax
             jnz .decomp_loop
 
         inc rsi
         loop .loop1
 
-        ; Поиск цифры с МИНИМАЛЬНОЙ частотой
-        mov rax, 0x7FFFFFFFFFFFFFFF  ; Очень большое число
-        xor rbx, rbx                 ; Цифра с минимальной частотой
-        mov rcx, 0                   ; Счетчик цифр
+        mov rax, 0x7FFFFFFFFFFFFFFF
+        xor rbx, rbx
+        mov rcx, 0
 
     .comp_loop:
         cmp rcx, 10
@@ -202,17 +191,16 @@ _start:
 
         mov r9, [digits + rcx*8]
         cmp r9, rax
-        jge @f                      ; Пропускаем если частота >= текущего минимума
+        jge @f
 
-        mov rax, r9                 ; Новый минимум
-        mov rbx, rcx                ; Сохраняем цифру
+        mov rax, r9
+        mov rbx, rcx
 
     @@:
         inc rcx
         jmp .comp_loop
 
     .next2:
-        ; Выводим результат (цифра в RBX)
         mov rax, rbx
         mov rsi, buffer
         call number_str

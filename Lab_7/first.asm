@@ -9,7 +9,6 @@ section '.bss' writable
     pid rq 1
     status rd 1
 
-    ; Переменные окружения (обязательные для ncurses)
     env_term db "TERM=xterm-256color", 0
     env_path db "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", 0
     env_home db "HOME=/home/user", 0
@@ -20,7 +19,6 @@ section '.bss' writable
 
 section '.text' executable
 _start:
-; Инициализация массива envp
     lea rax, [env_term]
     mov [envp], rax
     lea rax, [env_path]
@@ -33,7 +31,7 @@ _start:
     mov [envp + 32], rax
     lea rax, [env_pwd]
     mov [envp + 40], rax
-    mov qword [envp + 48], 0  ; NULL терминатор
+    mov qword [envp + 48], 0
 
 main_loop:
     mov rsi, buffer
@@ -56,7 +54,6 @@ main_loop:
     mov rax, 59
     syscall
 
-    ;syscall
     call exit
 
 wait_up:
@@ -68,8 +65,6 @@ wait_up:
     syscall
     jmp main_loop
 
-;The function realizates user input from the keyboard
-;input: rsi - place of memory saved input string
 input_keyboard:
   push rax
   push rdi
@@ -94,7 +89,6 @@ input_keyboard:
   pop rax
   ret
 
-; Парсинг аргументов
 parse:
     push rbx
     push r12
