@@ -69,7 +69,7 @@ _start:
 @@:
     mov [palette], rax
     mov r8, [xmax]
-    mov r9, 0               ;///////////////////////////////////////////
+    mov r9, 0               
     jmp .loop_to_left
 .to_down_right:
     dec r8
@@ -90,7 +90,7 @@ _start:
     mov rdi, 1
     call timeout
     call getch
-    cmp rax, 'a'
+    cmp rax, 'z'
     jne @f
     jmp .exit
 @@:
