@@ -8,7 +8,10 @@ section '.bss' writable
     tokens rb 2048
     pid rq 1
     status rd 1
-
+    
+    mapped_addr rq 1
+    mapped_size rq 1
+    
     env_term db "TERM=xterm-256color", 0
     env_path db "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", 0
     env_home db "HOME=/home/user", 0
@@ -18,6 +21,51 @@ section '.bss' writable
     envp rq 16
 
 section '.text' executable
+
+mmap_anonymous:
+    push rbx
+    
+    mov rbx, rdi
+    
+    mov rax, 9
+    xor rdi, rdi
+    mov rsi, rbx
+    mov rdx, 3
+    mov r10, 0x22
+    mov r8, -1
+    xor r9, r9
+    syscall
+    
+    cmp rax, -4095
+    jae .error
+    
+    pop rbx
+    ret
+    
+.error:
+    mov rax, -1
+    pop rbx
+    ret
+
+munmap_memory:
+    mov rax, 11
+    syscall
+    ret
+
+strcpy:
+    push rbx
+    xor rcx, rcx
+.copy_loop:
+    mov bl, [rsi+rcx]
+    mov [rdi+rcx], bl
+    test bl, bl
+    jz .done
+    inc rcx
+    jmp .copy_loop
+.done:
+    pop rbx
+    ret
+
 _start:
     lea rax, [env_term]
     mov [envp], rax
@@ -33,15 +81,35 @@ _start:
     mov [envp + 40], rax
     mov qword [envp + 48], 0
 
+    mov rdi, 4096
+    call mmap_anonymous
+    cmp rax, -1
+    je .skip_use
+    
+    mov [mapped_addr], rax
+    mov qword [mapped_size], 4096
+    
+    mov rdi, rax
+    mov rsi, example_str
+    call strcpy
+
+.skip_use:
 main_loop:
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, prompt
+    mov rdx, prompt_len
+    syscall
+    
     mov rsi, buffer
     call input_keyboard
-    mov rax, 57
-    syscall
-
+    
     cmp byte [buffer], 0
     je main_loop
-
+    
+    mov rax, 57
+    syscall
+    
     cmp rax, 0
     jne wait_up
 
@@ -53,41 +121,40 @@ main_loop:
     lea rdx, [envp]
     mov rax, 59
     syscall
-
+    
     call exit
 
 wait_up:
-    mov rdi, -1
+    mov [pid], rax
+    
+    mov rdi, [pid]
     mov rsi, status
-    mov rdx, 0
-    mov r10, 0
+    xor rdx, rdx
+    xor r10, r10
     mov rax, 61
     syscall
     jmp main_loop
 
 input_keyboard:
-  push rax
-  push rdi
-  push rdx
-
-  mov rax, 0
-  mov rdi, 0
-  mov rdx, 255
-  syscall
-
-  xor rcx, rcx
-  .loop:
-     mov al, [rsi+rcx]
-     inc rcx
-     cmp rax, 0x0A
-     jne .loop
-  dec rcx
-  mov byte [rsi+rcx], 0
-
-  pop rdx
-  pop rdi
-  pop rax
-  ret
+    push rdi
+    push rdx
+    push rcx
+    
+    mov rax, 0
+    mov rdi, 0
+    mov rdx, 1023
+    syscall
+    
+    mov rcx, rax
+    cmp rcx, 0
+    je .done
+    mov byte [rsi + rcx - 1], 0
+    
+.done:
+    pop rcx
+    pop rdx
+    pop rdi
+    ret
 
 parse:
     push rbx
@@ -100,37 +167,38 @@ parse:
     xor rcx, rcx
     xor rdx, rdx
 
-.skip:
+.skip_spaces:
     mov al, [rbx + rdx]
     test al, al
     jz .done
     cmp al, ' '
-    jne .start
+    jne .start_token
     inc rdx
-    jmp .skip
+    jmp .skip_spaces
 
-.start:
+.start_token:
     mov [r13 + rcx*8], r12
-.copy:
+    inc rcx
+
+.copy_token:
     mov al, [rbx + rdx]
     test al, al
-    jz .end
+    jz .end_token
     cmp al, ' '
-    je .end
+    je .end_token
     mov [r12], al
     inc r12
     inc rdx
-    jmp .copy
+    jmp .copy_token
 
-.end:
+.end_token:
     mov byte [r12], 0
     inc r12
-    inc rcx
     mov al, [rbx + rdx]
     test al, al
     jz .done
     inc rdx
-    jmp .skip
+    jmp .skip_spaces
 
 .done:
     mov qword [r13 + rcx*8], 0
@@ -140,6 +208,18 @@ parse:
     ret
 
 exit:
-	mov rax, 0x3c
-	mov rdi, 0
-	syscall
+    mov rdi, [mapped_addr]
+    cmp rdi, 0
+    je .no_memory
+    mov rsi, [mapped_size]
+    call munmap_memory
+
+.no_memory:
+    mov rax, 60
+    xor rdi, rdi
+    syscall
+
+section '.data'
+example_str db "Hello from mapped memory!", 0
+prompt db "$ ", 0
+prompt_len = $ - prompt
