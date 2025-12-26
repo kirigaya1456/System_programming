@@ -191,6 +191,11 @@ _start:
     mov rax, 1
     call printf
     
+    movq xmm0, [math_e]
+    mov rdi, fmt_math_e  
+    mov rax, 1
+    call printf
+
     mov rax, 60
     xor rdi, rdi
     syscall
